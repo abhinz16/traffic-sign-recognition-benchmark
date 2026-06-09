@@ -1,6 +1,6 @@
 # Traffic Sign Recognition and Cross-Dataset Robustness Benchmark
 
-![Graphical Abstract](figures/graphical_abstract.png)
+![Graphical Abstract](graphical_abstract.png)
 
 ## Overview
 
