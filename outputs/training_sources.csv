@@ -1,0 +1,4 @@
+mapped_classes,name,note,total_images_found,train_images,validation_images
+,GTSRB,,,22644,3996
+0,BelgiumTS,"Found no valid file for the classes BelgiumTSD_annotations (1), NonTS_TestingBG, Seqs_poses_annotations (1). Supported extensions are: .jpg, .jpeg, .png, .ppm, .bmp, .pgm, .tif, .tiff, .webp",0,0,
+0,Mapillary,"Found no valid file for the classes annotations for mtsd in coco format, mtsd_partially_annotated_annotation, mtsd_v2_fully_annotated_annotation.zip. Supported extensions are: .jpg, .jpeg, .png, .ppm, .bmp, .pgm, .tif, .tiff, .webp",0,0,
