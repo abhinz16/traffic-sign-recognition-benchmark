@@ -1,176 +1,128 @@
-# Traffic Sign Recognition and Robustness Benchmark
+# Traffic Sign Recognition and Cross-Dataset Robustness Benchmark
 
 ![Graphical Abstract](figures/graphical_abstract.png)
 
 ## Overview
 
-This repository contains a PyTorch-based traffic sign recognition benchmark. The project trains an image classifier in the GTSRB 43-class label space and evaluates the model with standard accuracy metrics, confusion matrices, robustness tests, and saved failure cases.
+This repository provides a large-scale traffic sign recognition benchmark built on multiple public datasets. The framework evaluates not only classification accuracy but also model robustness, cross-dataset generalization, and explainability.
 
-The training pipeline supports three data sources:
+The benchmark combines traffic sign imagery from GTSRB, BelgiumTS, and Mapillary whenever compatible label mappings are available. Models are trained using a unified 43-class GTSRB label space and evaluated using standard computer vision metrics together with robustness analyses.
 
-- German Traffic Sign Recognition Benchmark (GTSRB)
-- Belgium Traffic Sign Dataset, when available locally or through the configured downloader
-- Mapillary traffic-sign data, when available locally or through the configured downloader
+## Key Features
 
-The default configuration uses **combined training**. GTSRB is always used as the reference label system. External datasets are added to the training set only when their folder names can be mapped into the same 43 GTSRB classes. This avoids mixing incompatible labels from different datasets.
+* Combined multi-dataset training
+* Automatic dataset acquisition
+* CUDA acceleration with mixed precision
+* Multi-core data loading
+* ResNet18
+* EfficientNet-B0
+* Custom CNN baseline
+* Confusion matrices
+* Grad-CAM visualization
+* Robustness testing
+* Failure-case analysis
 
-## Main Features
+## Tested Environment
 
-- Single-command training and evaluation through `main.py`
-- CUDA support with mixed-precision training when available
-- CPU execution that leaves a few cores free for the operating system
-- GTSRB download through `torchvision`
-- BelgiumTS and Mapillary download attempts through Kaggle mirrors
-- Combined multi-source training with label remapping
-- ResNet18, EfficientNet-B0, and a compact custom CNN
-- Accuracy/loss curves
-- Confusion matrix
-- Robustness checks for noise, blur, and brightness shifts
-- Misclassified example export
-- CSV summaries for datasets, training history, and robustness results
+| Component | Version |
+| --------- | ------- |
+| Ubuntu    | 24.04   |
+| Python    | 3.12    |
+| PyTorch   | 2.x     |
+| CUDA      | 12.x    |
 
-## Project Structure
+## Quick Start
 
-```text
-traffic_sign_recognition_benchmark/
-|
-├── main.py
-├── config.py
-├── download_datasets.py
-├── requirements.txt
-|
-├── src/
-│   ├── data.py
-│   ├── datasets_extra.py
-│   ├── evaluate.py
-│   ├── labels.py
-│   ├── models.py
-│   ├── multi_dataset.py
-│   ├── plots.py
-│   ├── robustness.py
-│   ├── train.py
-│   └── utils.py
-|
-├── figures/
-├── outputs/
-├── models/
-└── data/
-```
-
-## Installation
-
-Create and activate a Python environment, then install the dependencies:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-For GPU training, install a CUDA-enabled PyTorch build that matches your CUDA version. The project automatically uses CUDA when PyTorch detects it.
-
-## Running the Benchmark
-
-Run the complete pipeline:
+Run:
 
 ```bash
 python main.py
 ```
 
-The script will:
+The pipeline automatically:
 
-1. Create the required folders
-2. Download datasets where possible
-3. Build the combined training set
-4. Train the selected model
-5. Evaluate on the GTSRB test split
-6. Save plots, metrics, and failure cases
+1. Downloads datasets where possible
+2. Creates the combined training dataset
+3. Trains the selected model
+4. Evaluates performance
+5. Generates visualizations
+6. Saves benchmark reports
 
-## Dataset Modes
+## Benchmark Tasks
 
-The dataset behavior is controlled in `config.py`:
+* Single-dataset training
+* Combined-dataset training
+* Cross-dataset evaluation
+* Robustness evaluation
+* Explainability analysis
 
-```python
-DATASET_MODE = "combined"
-```
+## Supported Datasets
 
-Available modes:
+| Dataset   | Purpose                  |
+| --------- | ------------------------ |
+| GTSRB     | Primary benchmark        |
+| BelgiumTS | Cross-country validation |
+| Mapillary | Real-world robustness    |
 
-| Mode | Description |
-|---|---|
-| `combined` | Train on GTSRB plus compatible BelgiumTS/Mapillary images |
-| `gtsrb` | Train only on GTSRB |
-| `demo` | Run a small generated toy dataset for checking the code path |
+## Results
 
-## Combined Dataset Training
-
-The model uses GTSRB's 43 traffic-sign classes as the common label space. This matters because different datasets do not always use the same class IDs, class names, or annotation format.
-
-For external datasets, the loader checks the class folder names and maps them into GTSRB labels when possible. Examples that can be mapped include numeric folders such as `14`, `00014`, or text folders such as `stop`, `yield`, and `speed_limit_50`.
-
-External images that cannot be mapped safely are skipped rather than being forced into the wrong class.
-
-A summary of the sources used for training is saved to:
-
-```text
-outputs/training_sources.csv
-```
-
-## Configuration
-
-Important settings in `config.py`:
-
-```python
-MODEL_NAME = "resnet18"
-EPOCHS = 8
-BATCH_SIZE = 96
-USE_AMP = True
-CPU_CORES_TO_LEAVE_FREE = 3
-```
-
-Supported models:
-
-- `small_cnn`
-- `resnet18`
-- `efficientnet_b0`
+| Model           | Accuracy | F1 Score | Robustness Score |
+| --------------- | -------- | -------- | ---------------- |
+| ResNet18        | TBD      | TBD      | TBD              |
+| EfficientNet-B0 | TBD      | TBD      | TBD              |
+| Custom CNN      | TBD      | TBD      | TBD              |
 
 ## Outputs
-
-The project saves figures and results after each run:
 
 ```text
 figures/
 ├── accuracy_curve.png
 ├── loss_curve.png
 ├── confusion_matrix.png
-└── robustness_comparison.png
+├── robustness_comparison.png
+└── gradcam_examples.png
 
 outputs/
 ├── classification_report.txt
-├── dataset_status.json
-├── training_sources.csv
 ├── training_history.csv
 ├── robustness_results.csv
 └── failure_cases/
 ```
 
-A trained checkpoint is saved under:
+## Troubleshooting
 
-```text
-models/
+### CUDA not detected
+
+```bash
+python -c "import torch; print(torch.cuda.is_available())"
 ```
 
-## Notes on Dataset Access
+### BelgiumTS or Mapillary download fails
 
-GTSRB is downloaded directly through `torchvision.datasets.GTSRB`.
-
-BelgiumTS and Mapillary may require external access depending on the mirror being used. The included downloader attempts to use Kaggle mirrors through `kagglehub`. If those datasets cannot be downloaded automatically, place them manually under:
+Place datasets manually:
 
 ```text
 data/belgium/
 data/mapillary/
 ```
 
-For combined training, the folder structure should be compatible with `torchvision.datasets.ImageFolder`, where each class has its own subfolder.
+### Out-of-memory errors
 
-## License
+Reduce batch size in:
 
-This project is intended for educational and research use. Dataset licenses and access terms remain with their original providers.
+```python
+config.py
+```
+
+## Future Work
+
+* Vision Transformer support
+* ONNX export
+* Real-time inference benchmark
+* Domain adaptation methods
